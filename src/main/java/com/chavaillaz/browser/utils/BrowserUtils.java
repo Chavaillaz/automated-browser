@@ -21,6 +21,12 @@ import static java.util.Collections.singletonList;
 @UtilityClass
 public class BrowserUtils {
 
+    /**
+     * Gets the driver of the given browser.
+     *
+     * @param browser The browser from which get the driver
+     * @return The driver of the given browser
+     */
     public static WebDriver getDriver(Browser browser) {
         WebDriver driver = switch (browser) {
             case EDGE -> getEdgeDriver();
@@ -31,11 +37,21 @@ public class BrowserUtils {
         return driver;
     }
 
+    /**
+     * Gets the driver for Google Chrome browser.
+     *
+     * @return The chrome driver
+     */
     public static WebDriver getChromeDriver() {
         WebDriverManager.chromedriver().create();
         return new ChromeDriver(getChromeOptions());
     }
 
+    /**
+     * Gets the options for Google Chrome browser.
+     *
+     * @return The chrome options
+     */
     public static ChromeOptions getChromeOptions() {
         ChromeOptions options = new ChromeOptions();
         Map<String, Object> preferences = new HashMap<>();
@@ -51,12 +67,23 @@ public class BrowserUtils {
         return options;
     }
 
+    /**
+     * Gets the driver for Mozilla Firefox.
+     *
+     * @return The firefox driver
+     */
     public static WebDriver getFirefoxDriver() {
         WebDriverManager.firefoxdriver().create();
         FirefoxOptions options = new FirefoxOptions().merge(getChromeOptions());
         return new FirefoxDriver(options);
     }
 
+    /**
+     * Gets the driver for Microsoft Edge.
+     * Note that this driver cannot be used in a docker container.
+     *
+     * @return The edge driver
+     */
     public static WebDriver getEdgeDriver() {
         WebDriverManager.edgedriver().create();
         EdgeOptions options = new EdgeOptions().merge(getChromeOptions());
