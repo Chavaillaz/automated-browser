@@ -26,10 +26,57 @@ An example of usage is available in the ```MavenCentralTest``` class.
 
 ### Implementing your requirements
 
+#### Stateful
+
 In order to benefit from this library, create new classes extending `AutomatedBrowser` and use the methods available in 
 it to simplify the implementation of your requirements.
 
-### Running as a standalone application
+An example of extension available in the tests of the project is the `MavenCentral` class. Its goal is to get the 
+markdown of the last version of an artifact and take a screenshot of it. It can be used with:
+
+```java
+try (MavenCentral browser = new MavenCentral(driver)) {
+    browser.searchArtifactBadge("org.slf4j:slf4j-api");
+}
+```
+
+#### Stateful - Flow
+
+There is also a possibility to have a flow with multiple steps defining your requirements, using the classes extending 
+`AutomatedBrowser` you created:
+
+```java
+try (MavenCentral browser = new MavenCentral(driver)) {
+    browser.setData(new MavenCentralData("org.slf4j:slf4j-api"));
+    new AutomatedBrowserFlow<>(browser)
+        .withStep(MavenCentral::stepSearchArtifact)
+        .withStep(MavenCentral::stepLogLastVersion)
+        .withStep(MavenCentral::stepHighlightBadge);
+}
+```
+
+Note that you can also give a default exception handler for all step or a specific one overriding it for some steps.
+
+#### Stateless - Flow
+
+Also with the same flow system, you can have stateless calls to static methods. Those methods can have:
+- No parameter
+- One parameter: the class extending `AutomatedBrowser` you gave in the constructor (defaulting to `AutomatedBrowser`)
+- Two parameters: first same as above and second the context data instance you can set with `withContext` method
+
+```java
+try (MavenCentral browser = new MavenCentral(driver)) {
+    new AutomatedBrowserFlow<MavenCentral, MavenCentralData>(browser)
+        .withContext(new MavenCentralData("org.slf4j:slf4j-api"))
+        .withStep(MavenCentralStep::stepSearchArtifact)
+        .withStep(MavenCentralStep::stepLogLastVersion)
+        .withStep(MavenCentralStep::stepHighlightBadge);
+}
+```
+
+### Running your application
+
+#### As a standalone application
 
 Creates your preferred the driver using the methods in `BrowserUtils`:
 
@@ -41,7 +88,7 @@ Then pass it to the classes you created (see chapter above) and start using them
 browsers available on your computer, meaning when you choose a browser driver in the code, you need that browser
 installed on your computer to make it working.
 
-### Running in a docker container
+#### As a docker container
 
 Thanks to test containers, you can also directly run it in a docker container containing the browser you want to use.
 For that, include the following dependencies in your project:

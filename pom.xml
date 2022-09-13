@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>${project.groupId}.${project.artifactId}</name>
-    <description>Automated Browser</description>
+    <description>Library to automate a browser for multiple purposes</description>
     <url>https://github.com/chavaillaz/automated-browser</url>
 
     <scm>
@@ -118,7 +118,7 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>${log4j.version}</version>
-            <scope>runtime</scope>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

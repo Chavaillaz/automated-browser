@@ -8,6 +8,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
 
 import java.awt.Rectangle;
 import java.awt.*;
@@ -43,6 +44,15 @@ public class AutomatedBrowser implements Closeable {
     }
 
     /**
+     * Gets the logger.
+     *
+     * @return The logger
+     */
+    public Logger getLogger() {
+        return log;
+    }
+
+    /**
      * Changes the window size of the browser.
      *
      * @param width  The desired window width
@@ -54,6 +64,7 @@ public class AutomatedBrowser implements Closeable {
 
     /**
      * Navigates to a web page.
+     * Override it to manage for example authentication to services.
      *
      * @param url The web page to access
      */
@@ -143,6 +154,19 @@ public class AutomatedBrowser implements Closeable {
     }
 
     /**
+     * Gets an element present in a given element.
+     *
+     * @param element  The element in which the other to get is present
+     * @param selector The selector of the element to get
+     * @return The first corresponding element, {@link Optional#empty()} otherwise
+     */
+    public Optional<WebElement> getElement(WebElement element, By selector) {
+        return getElements(element, selector)
+                .stream()
+                .findFirst();
+    }
+
+    /**
      * Gets a list of elements.
      *
      * @param selector The selector of the elements to get
@@ -150,6 +174,17 @@ public class AutomatedBrowser implements Closeable {
      */
     public List<WebElement> getElements(By selector) {
         return getDriver().findElements(selector);
+    }
+
+    /**
+     * Gets a list of elements present in a given element.
+     *
+     * @param element  The element in which the others to get are present
+     * @param selector The selector of the elements to get
+     * @return The corresponding elements, an empty list if there is no one
+     */
+    public List<WebElement> getElements(WebElement element, By selector) {
+        return element.findElements(selector);
     }
 
     /**
