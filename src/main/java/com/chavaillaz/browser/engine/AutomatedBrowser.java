@@ -257,6 +257,24 @@ public class AutomatedBrowser implements Closeable {
      * @param element The element to scroll to
      */
     public void scroll(WebElement element) {
+        hover(element);
+    }
+
+    /**
+     * Moves the mouse hover an element.
+     *
+     * @param selector The selector of the element to move to
+     */
+    public void hover(By selector) {
+        getElement(selector).ifPresent(this::hover);
+    }
+
+    /**
+     * Moves the mouse hover an element.
+     *
+     * @param element The element to move to
+     */
+    public void hover(WebElement element) {
         Actions actions = new Actions(getDriver());
         actions.moveToElement(element);
         actions.perform();
