@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static java.awt.Toolkit.getDefaultToolkit;
@@ -44,15 +45,6 @@ public class AutomatedBrowser implements Closeable {
     }
 
     /**
-     * Gets the logger.
-     *
-     * @return The logger
-     */
-    public Logger getLogger() {
-        return log;
-    }
-
-    /**
      * Changes the window size of the browser.
      *
      * @param width  The desired window width
@@ -63,82 +55,12 @@ public class AutomatedBrowser implements Closeable {
     }
 
     /**
-     * Navigates to a web page.
-     * Override it to manage for example authentication to services.
+     * Gets the logger.
      *
-     * @param url The web page to access
+     * @return The logger
      */
-    public void navigate(String url) {
-        log.debug("Navigating to {}", url);
-        getDriver().get(url);
-    }
-
-    /**
-     * Navigates to a web page and waits 30 seconds for an element to be present.
-     *
-     * @param url      The web page to access
-     * @param selector The selector of the element to wait for
-     * @throws TimeoutException If the timeout expires
-     */
-    public void navigate(String url, By selector) {
-        navigate(url);
-        wait(selector);
-    }
-
-    /**
-     * Waits 30 seconds for an element to be present.
-     *
-     * @param selector The element to wait for
-     * @throws TimeoutException If the timeout expires
-     */
-    public void wait(By selector) {
-        wait(presenceOfElementLocated(selector));
-    }
-
-    /**
-     * Waits 30 seconds for a condition to happen.
-     *
-     * @param condition The condition to wait for
-     * @throws TimeoutException If the timeout expires
-     */
-    public <E> void wait(ExpectedCondition<E> condition) {
-        wait(condition, 30);
-    }
-
-    /**
-     * Waits the given amount of time for a condition to happen.
-     *
-     * @param condition The condition to wait for
-     * @param seconds   The timeout in seconds
-     * @throws TimeoutException If the timeout expires
-     */
-    public <E> void wait(ExpectedCondition<E> condition, int seconds) {
-        new WebDriverWait(getDriver(), ofSeconds(seconds)).until(condition);
-    }
-
-    /**
-     * Gets the text of an element.
-     *
-     * @param selector The selector of the element to get the text from
-     * @return The text of the element, {@code null} otherwise
-     */
-    public String getText(By selector) {
-        return getElement(selector)
-                .map(WebElement::getText)
-                .orElse(null);
-    }
-
-    /**
-     * Gets the attribute of an element.
-     *
-     * @param selector  The selector of the element to get the attribute from
-     * @param attribute The attribute to get from the selected element
-     * @return The given attribute of the selected element, {@code null} otherwise
-     */
-    public String getAttribute(By selector, String attribute) {
-        return getElement(selector)
-                .map(element -> element.getAttribute(attribute))
-                .orElse(null);
+    public Logger getLogger() {
+        return log;
     }
 
     /**
@@ -188,34 +110,28 @@ public class AutomatedBrowser implements Closeable {
     }
 
     /**
-     * Checks if an element exists.
+     * Gets the attribute of an element.
      *
-     * @param selector The selector of the element to find
-     * @return {@code true} if the element is found, {@code false} otherwise
+     * @param selector  The selector of the element to get the attribute from
+     * @param attribute The attribute to get from the selected element
+     * @return The given attribute of the selected element, {@code null} otherwise
      */
-    public boolean exist(By selector) {
-        return getElement(selector).isPresent();
+    public String getAttribute(By selector, String attribute) {
+        return getElement(selector)
+                .map(element -> element.getAttribute(attribute))
+                .orElse(null);
     }
 
     /**
-     * Sends a char sequence to the given element.
+     * Gets the text of an element.
      *
-     * @param selector The selector of the element to send the sequence to
-     * @param value    The char sequence to send to the element
-     * @throws NoSuchElementException If no matching element is found
+     * @param selector The selector of the element to get the text from
+     * @return The text of the element, {@code null} otherwise
      */
-    public void send(By selector, CharSequence value) {
-        getDriver().findElement(selector).sendKeys(value);
-    }
-
-    /**
-     * Clicks on an element.
-     *
-     * @param selector The selector of the element to click on
-     * @throws NoSuchElementException If no matching element is found
-     */
-    public void click(By selector) {
-        getDriver().findElement(selector).click();
+    public String getText(By selector) {
+        return getElement(selector)
+                .map(WebElement::getText)
+                .orElse(null);
     }
 
     /**
@@ -243,6 +159,146 @@ public class AutomatedBrowser implements Closeable {
     }
 
     /**
+     * Navigates to a web page.
+     * Override it to manage for example authentication to services.
+     *
+     * @param url The web page to access
+     */
+    public void navigate(String url) {
+        log.debug("Navigating to {}", url);
+        getDriver().get(url);
+    }
+
+    /**
+     * Navigates to a web page and waits 30 seconds for an element to be present.
+     *
+     * @param url          The web page to access
+     * @param waitSelector The selector of the element to wait for
+     * @throws TimeoutException If the timeout expires
+     */
+    public void navigate(String url, By waitSelector) {
+        navigate(url);
+        wait(waitSelector);
+    }
+
+    /**
+     * Waits 30 seconds for an element to be present.
+     *
+     * @param selector The element to wait for
+     * @throws TimeoutException If the timeout expires
+     */
+    public void wait(By selector) {
+        wait(presenceOfElementLocated(selector));
+    }
+
+    /**
+     * Waits 30 seconds for a condition to happen.
+     *
+     * @param condition The condition to wait for
+     * @throws TimeoutException If the timeout expires
+     */
+    public <E> void wait(ExpectedCondition<E> condition) {
+        wait(condition, 30);
+    }
+
+    /**
+     * Waits the given amount of time for a condition to happen.
+     *
+     * @param condition The condition to wait for
+     * @param seconds   The timeout in seconds
+     * @throws TimeoutException If the timeout expires
+     */
+    public <E> void wait(ExpectedCondition<E> condition, int seconds) {
+        new WebDriverWait(getDriver(), ofSeconds(seconds)).until(condition);
+    }
+
+    /**
+     * Checks if an element exists.
+     *
+     * @param selector The selector of the element to find
+     * @return {@code true} if the element is found, {@code false} otherwise
+     */
+    public boolean exist(By selector) {
+        return getElement(selector).isPresent();
+    }
+
+    /**
+     * Checks if an element is visible in the current displayed part of the page (viewport).
+     *
+     * @param selector The selector of the element to find
+     * @return {@code true} if the element is visible, {@code false} otherwise
+     */
+    public boolean visible(By selector) {
+        return getElement(selector)
+                .map(this::visible)
+                .orElse(false);
+    }
+
+    /**
+     * Checks if the given element is visible in the current displayed part of the page (viewport).
+     *
+     * @param element The element to check
+     * @return {@code true} if the element is visible, {@code false} otherwise
+     */
+    public boolean visible(WebElement element) {
+        return (boolean) ((JavascriptExecutor) getDriver()).executeScript("""
+                var element = arguments[0],
+                    box = element.getBoundingClientRect(),
+                    cx = box.left + box.width / 2,
+                    cy = box.top + box.height / 2,
+                    e = document.elementFromPoint(cx, cy);
+                for (; e; e = e.parentElement) {
+                    if (e === element)
+                        return true;
+                }
+                return false;
+                """, element);
+    }
+
+    /**
+     * Performs actions in the current loaded page.
+     *
+     * @param actionsDescriptor The consumer calling the actions to execute
+     */
+    public void perform(Consumer<Actions> actionsDescriptor) {
+        Actions actions = new Actions(getDriver());
+        actionsDescriptor.accept(actions);
+        actions.perform();
+    }
+
+    /**
+     * Sends a char sequence to the given element.
+     *
+     * @param selector The selector of the element to send the sequence to
+     * @param value    The char sequence to send to the element
+     * @throws NoSuchElementException If no matching element is found
+     */
+    public void send(By selector, CharSequence value) {
+        getDriver().findElement(selector).sendKeys(value);
+    }
+
+    /**
+     * Clicks on an element.
+     *
+     * @param selector The selector of the element to click on
+     * @throws NoSuchElementException If no matching element is found
+     */
+    public void click(By selector) {
+        getDriver().findElement(selector).click();
+    }
+
+    /**
+     * Scrolls up or down by a certain amount of pixels.
+     * Use negative values to scroll up and positive ones to scroll down.
+     *
+     * @param horizontal The horizontal amount of pixels to scroll
+     * @param vertical   The vertical amount of pixels to scroll
+     */
+    public void scroll(int horizontal, int vertical) {
+        ((JavascriptExecutor) getDriver()).executeScript("window.scrollBy(" + horizontal + ", " + vertical + ");");
+    }
+
+    /**
      * Scrolls to the given element.
      *
      * @param selector The selector of the element to scroll to
@@ -261,6 +317,17 @@ public class AutomatedBrowser implements Closeable {
     }
 
     /**
+     * Scrolls to the given element if not visible in the current displayed part of the page (viewport).
+     *
+     * @param element The element to check
+     */
+    public void scrollIfNotVisible(WebElement element) {
+        if (!visible(element)) {
+            scroll(element);
+        }
+    }
+
+    /**
      * Moves the mouse hover an element.
      *
      * @param selector The selector of the element to move to
@@ -275,9 +342,7 @@ public class AutomatedBrowser implements Closeable {
      * @param element The element to move to
      */
     public void hover(WebElement element) {
-        Actions actions = new Actions(getDriver());
-        actions.moveToElement(element);
-        actions.perform();
+        perform(action -> action.moveToElement(element));
     }
 
     /**
@@ -319,14 +384,16 @@ public class AutomatedBrowser implements Closeable {
             // Wait for the browser to render changes (e.g. for highlighted elements)
             Thread.sleep(500);
 
+            File targetFile = new File(path);
             if (fullScreen) {
                 Rectangle screen = new Rectangle(getDefaultToolkit().getScreenSize());
                 BufferedImage image = new Robot().createScreenCapture(screen);
-                write(image, "png", new File(path));
+                write(image, "png", targetFile);
             } else {
                 File file = ((TakesScreenshot) getDriver()).getScreenshotAs(FILE);
-                copyFile(file, new File(path), true);
+                copyFile(file, targetFile, true);
             }
+            log.debug("Screenshot saved at {}", targetFile.getAbsolutePath());
         } catch (InterruptedException e) {
             currentThread().interrupt();
         } catch (Exception e) {
