@@ -2,15 +2,20 @@ package com.chavaillaz.browser;
 
 import com.chavaillaz.browser.engine.AutomatedBrowserFlow;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testcontainers.containers.BrowserWebDriverContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
+import java.util.List;
 
 import static com.chavaillaz.browser.MavenCentral.SCREENSHOT_PATH;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.openqa.selenium.By.xpath;
 import static org.testcontainers.containers.BrowserWebDriverContainer.VncRecordingMode.SKIP;
 
 @Testcontainers
@@ -29,6 +34,35 @@ class MavenCentralTest {
         try (MavenCentral browser = new MavenCentral(driver)) {
             browser.setWindowSize(1920, 1080);
             browser.searchArtifact(ARTIFACT);
+            assertTrue(isNotBlank(browser.getData().getLastVersion()));
+
+            String dropdownSelection = "//select[@data-test='snippet-dropdown']";
+            WebElement dropdown = browser.getElement(xpath(dropdownSelection)).orElse(null);
+            assertNotNull(dropdown);
+
+            // Check getElements
+            List<WebElement> values = browser.getElements(dropdown, By.tagName("option"));
+            assertFalse(values.isEmpty());
+
+            // Check getAttribute
+            String firstValue = browser.getAttribute(
+                    xpath(dropdownSelection + "/option"),
+                    "value");
+            assertTrue(values.stream()
+                    .map(element -> element.getAttribute("value"))
+                    .toList()
+                    .contains(firstValue));
+
+            // Check findFirstExisting and findExisting
+            By firstExisting = browser.findFirstExisting(
+                            xpath("//div[@class='unknown']"),
+                            xpath(dropdownSelection))
+                    .orElse(null);
+            assertEquals(xpath(dropdownSelection), firstExisting);
+
+            // Check full screenshot
+            browser.screenshot("maven-full.png", true);
+            assertTrue(new File("maven-full.png").exists());
         }
 
         File screenshot = new File(SCREENSHOT_PATH);

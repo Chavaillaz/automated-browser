@@ -117,9 +117,24 @@ public class AutomatedBrowser implements Closeable {
      * @return The given attribute of the selected element, {@code null} otherwise
      */
     public String getAttribute(By selector, String attribute) {
-        return getElement(selector)
-                .map(element -> element.getAttribute(attribute))
+        return getAttributes(selector, attribute)
+                .stream()
+                .findFirst()
                 .orElse(null);
+    }
+
+    /**
+     * Gets the attribute of multiple elements.
+     *
+     * @param selector  The selector of the elements to get the attribute from
+     * @param attribute The attribute to get from the selected elements
+     * @return The given attribute of the selected elements, {@code null} otherwise
+     */
+    public List<String> getAttributes(By selector, String attribute) {
+        return getElements(selector)
+                .stream()
+                .map(element -> element.getAttribute(attribute))
+                .toList();
     }
 
     /**
@@ -314,6 +329,15 @@ public class AutomatedBrowser implements Closeable {
      */
     public void scroll(WebElement element) {
         hover(element);
+    }
+
+    /**
+     * Scrolls to the given element if not visible in the current displayed part of the page (viewport).
+     *
+     * @param element The element to check
+     */
+    public void scrollIfNotVisible(By element) {
+        getElement(element).ifPresent(this::scrollIfNotVisible);
     }
 
     /**

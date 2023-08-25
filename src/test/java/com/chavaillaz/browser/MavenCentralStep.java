@@ -28,7 +28,7 @@ public class MavenCentralStep {
     public static void stepHighlightSnippet(AutomatedBrowser browser, MavenCentralData data) {
         browser.click(MAVEN_SEARCH_RESULTS);
         browser.wait(MAVEN_SNIPPET);
-        browser.scroll(MAVEN_SNIPPET);
+        browser.scrollIfNotVisible(MAVEN_SNIPPET);
         browser.highlight(MAVEN_SNIPPET);
         browser.screenshot(SCREENSHOT_PATH);
     }
