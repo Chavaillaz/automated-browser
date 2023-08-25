@@ -22,7 +22,8 @@ The dependency is available in maven central (see badge for version):
 
 ## Usage
 
-An example of usage is available in the ```MavenCentralTest``` class.
+An example of usage is available in the ```MavenCentralTest``` class. Its goal is to search the last version of a Maven 
+artifact and take a screenshot of the code snippet to use.
 
 ### Implementing your requirements
 
@@ -31,12 +32,11 @@ An example of usage is available in the ```MavenCentralTest``` class.
 In order to benefit from this library, create new classes extending `AutomatedBrowser` and use the methods available in 
 it to simplify the implementation of your requirements.
 
-An example of extension available in the tests of the project is the `MavenCentral` class. Its goal is to get the 
-markdown of the last version of an artifact and take a screenshot of it. It can be used with:
+An example of extension available in the tests of the project is the `MavenCentral` class. It can be used with:
 
 ```java
 try (MavenCentral browser = new MavenCentral(driver)) {
-    browser.searchArtifactBadge("org.slf4j:slf4j-api");
+    browser.searchArtifact("org.slf4j:slf4j-api");
 }
 ```
 
@@ -51,7 +51,7 @@ try (MavenCentral browser = new MavenCentral(driver)) {
     new AutomatedBrowserFlow<>(browser)
         .withStep(MavenCentral::stepSearchArtifact)
         .withStep(MavenCentral::stepLogLastVersion)
-        .withStep(MavenCentral::stepHighlightBadge);
+        .withStep(MavenCentral::stepHighlightSnippet);
 }
 ```
 
@@ -70,7 +70,7 @@ try (MavenCentral browser = new MavenCentral(driver)) {
         .withContext(new MavenCentralData("org.slf4j:slf4j-api"))
         .withStep(MavenCentralStep::stepSearchArtifact)
         .withStep(MavenCentralStep::stepLogLastVersion)
-        .withStep(MavenCentralStep::stepHighlightBadge);
+        .withStep(MavenCentralStep::stepHighlightSnippet);
 }
 ```
 

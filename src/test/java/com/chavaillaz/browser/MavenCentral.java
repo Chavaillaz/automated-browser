@@ -18,11 +18,11 @@ public class MavenCentral extends AutomatedBrowser {
         super(driver);
     }
 
-    public void searchArtifactBadge(String artifact) {
+    public void searchArtifact(String artifact) {
         setData(new MavenCentralData(artifact));
         stepSearchArtifact();
         stepLogLastVersion();
-        stepHighlightBadge();
+        stepHighlightSnippet();
     }
 
     public void stepSearchArtifact() {
@@ -33,8 +33,8 @@ public class MavenCentral extends AutomatedBrowser {
         MavenCentralStep.stepLogLastVersion(this, getData());
     }
 
-    public void stepHighlightBadge() {
-        MavenCentralStep.stepHighlightBadge(this, getData());
+    public void stepHighlightSnippet() {
+        MavenCentralStep.stepHighlightSnippet(this, getData());
     }
 
 }

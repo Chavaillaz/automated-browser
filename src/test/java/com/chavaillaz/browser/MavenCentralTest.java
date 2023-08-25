@@ -28,7 +28,7 @@ class MavenCentralTest {
 
         try (MavenCentral browser = new MavenCentral(driver)) {
             browser.setWindowSize(1920, 1080);
-            browser.searchArtifactBadge(ARTIFACT);
+            browser.searchArtifact(ARTIFACT);
         }
 
         File screenshot = new File(SCREENSHOT_PATH);
@@ -45,7 +45,7 @@ class MavenCentralTest {
             new AutomatedBrowserFlow<>(browser)
                     .withStep(MavenCentral::stepSearchArtifact)
                     .withStep(MavenCentral::stepLogLastVersion)
-                    .withStep(MavenCentral::stepHighlightBadge);
+                    .withStep(MavenCentral::stepHighlightSnippet);
         }
 
         File screenshot = new File(SCREENSHOT_PATH);
@@ -62,7 +62,7 @@ class MavenCentralTest {
                     .withContext(new MavenCentralData(ARTIFACT))
                     .withStep(MavenCentralStep::stepSearchArtifact)
                     .withStep(MavenCentralStep::stepLogLastVersion)
-                    .withStep(MavenCentralStep::stepHighlightBadge);
+                    .withStep(MavenCentralStep::stepHighlightSnippet);
         }
 
         File screenshot = new File(SCREENSHOT_PATH);
