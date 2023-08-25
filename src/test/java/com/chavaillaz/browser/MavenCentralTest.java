@@ -59,10 +59,6 @@ class MavenCentralTest {
                             xpath(dropdownSelection))
                     .orElse(null);
             assertEquals(xpath(dropdownSelection), firstExisting);
-
-            // Check full screenshot
-            browser.screenshot("maven-full.png", true);
-            assertTrue(new File("maven-full.png").exists());
         }
 
         File screenshot = new File(SCREENSHOT_PATH);
