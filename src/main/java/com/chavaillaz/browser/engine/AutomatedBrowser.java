@@ -241,7 +241,7 @@ public class AutomatedBrowser implements Closeable {
      * Checks if an element is visible in the current displayed part of the page (viewport).
      *
      * @param selector The selector of the element to find
-     * @return {@code true} if the element is visible, {@code false} otherwise
+     * @return {@code true} if the center of the element is visible, {@code false} otherwise
      */
     public boolean visible(By selector) {
         return getElement(selector)
@@ -253,10 +253,10 @@ public class AutomatedBrowser implements Closeable {
      * Checks if the given element is visible in the current displayed part of the page (viewport).
      *
      * @param element The element to check
-     * @return {@code true} if the element is visible, {@code false} otherwise
+     * @return {@code true} if the center of the element is visible, {@code false} otherwise
      */
     public boolean visible(WebElement element) {
-        return (boolean) ((JavascriptExecutor) getDriver()).executeScript("""
+        return (boolean) execute("""
                 var element = arguments[0],
                     box = element.getBoundingClientRect(),
                     cx = box.left + box.width / 2,
@@ -279,6 +279,18 @@ public class AutomatedBrowser implements Closeable {
         Actions actions = new Actions(getDriver());
         actionsDescriptor.accept(actions);
         actions.perform();
+    }
+
+    /**
+     * Executes a Javascript in the current loaded page.
+     *
+     * @param script     The script to execute
+     * @param parameters The parameters to give to the script
+     * @return The returned value of the script
+     */
+    public Object execute(String script, Object... parameters) {
+        JavascriptExecutor js = ((JavascriptExecutor) getDriver());
+        return js.executeScript(script, parameters);
     }
 
     /**
@@ -310,45 +322,81 @@ public class AutomatedBrowser implements Closeable {
      * @param vertical   The vertical amount of pixels to scroll
      */
     public void scroll(int horizontal, int vertical) {
-        ((JavascriptExecutor) getDriver()).executeScript("window.scrollBy(" + horizontal + ", " + vertical + ");");
+        execute("window.scrollBy(" + horizontal + ", " + vertical + ");");
     }
 
     /**
-     * Scrolls to the given element.
+     * Scrolls to the end of the given element.
+     * This can be used for example to scroll down text areas.
      *
-     * @param selector The selector of the element to scroll to
+     * @param selector The selector of the element to scroll to the end
      */
-    public void scroll(By selector) {
-        getElement(selector).ifPresent(this::scroll);
+    public void scrollArea(By selector) {
+        getElement(selector).ifPresent(this::scrollArea);
     }
 
     /**
-     * Scrolls to the given element.
+     * Scrolls to the end of the given element.
+     * This can be used for example to scroll down text areas.
      *
-     * @param element The element to scroll to
+     * @param element The element to scroll to the end
      */
-    public void scroll(WebElement element) {
-        hover(element);
+    public void scrollArea(WebElement element) {
+        execute("arguments[0].scrollTo(0, arguments[0].scrollHeight)", element);
     }
 
     /**
-     * Scrolls to the given element if not visible in the current displayed part of the page (viewport).
+     * Aligns the top of the given element to the top of the visible area of the scrollable ancestor.
      *
-     * @param element The element to check
+     * @param selector The selector of the element to align
      */
-    public void scrollIfNotVisible(By element) {
-        getElement(element).ifPresent(this::scrollIfNotVisible);
+    public void alignTop(By selector) {
+        getElement(selector).ifPresent(this::alignTop);
     }
 
     /**
-     * Scrolls to the given element if not visible in the current displayed part of the page (viewport).
+     * Aligns the top of the given element to the top of the visible area of the scrollable ancestor.
      *
-     * @param element The element to check
+     * @param element The element to align
      */
-    public void scrollIfNotVisible(WebElement element) {
-        if (!visible(element)) {
-            scroll(element);
-        }
+    public void alignTop(WebElement element) {
+        execute("arguments[0].scrollIntoView(true);", element);
+    }
+
+    /**
+     * Aligns the center of the given element to the center of the visible area of the scrollable ancestor.
+     *
+     * @param selector The selector of the element to align
+     */
+    public void alignCenter(By selector) {
+        getElement(selector).ifPresent(this::alignCenter);
+    }
+
+    /**
+     * Aligns the center of the given element to the center of the visible area of the scrollable ancestor.
+     *
+     * @param element The element to align
+     */
+    public void alignCenter(WebElement element) {
+        execute("arguments[0].scrollIntoView({block: 'center'});", element);
+    }
+
+    /**
+     * Aligns the bottom of given element to the bottom of the visible area of the scrollable ancestor.
+     *
+     * @param selector The selector of the element to align
+     */
+    public void alignBottom(By selector) {
+        getElement(selector).ifPresent(this::alignBottom);
+    }
+
+    /**
+     * Aligns the bottom of given element to the bottom of the visible area of the scrollable ancestor.
+     *
+     * @param element The element to align
+     */
+    public void alignBottom(WebElement element) {
+        execute("arguments[0].scrollIntoView(false);", element);
     }
 
     /**
@@ -384,7 +432,7 @@ public class AutomatedBrowser implements Closeable {
      * @param element The element to highlight
      */
     public void highlight(WebElement element) {
-        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].style.background='yellow'", element);
+        execute("arguments[0].style.background='yellow'", element);
     }
 
     /**

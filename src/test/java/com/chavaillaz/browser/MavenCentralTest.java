@@ -12,9 +12,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.io.File;
 import java.util.List;
 
+import static com.chavaillaz.browser.Constants.*;
 import static com.chavaillaz.browser.MavenCentral.SCREENSHOT_PATH;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openqa.selenium.By.tagName;
 import static org.openqa.selenium.By.xpath;
 import static org.testcontainers.containers.BrowserWebDriverContainer.VncRecordingMode.SKIP;
 
@@ -22,6 +24,8 @@ import static org.testcontainers.containers.BrowserWebDriverContainer.VncRecordi
 class MavenCentralTest {
 
     public static final String ARTIFACT = "org.slf4j:slf4j-api";
+    public static final String BACKGROUND_COLOR = "background-color";
+    public static final String TRANSPARENT = "rgba(0, 0, 0, 0)";
 
     @Container
     private final BrowserWebDriverContainer<?> chrome = new WebDriverContainer<>()
@@ -41,7 +45,7 @@ class MavenCentralTest {
             assertNotNull(dropdown);
 
             // Check getElements
-            List<WebElement> values = browser.getElements(dropdown, By.tagName("option"));
+            List<WebElement> values = browser.getElements(dropdown, tagName("option"));
             assertFalse(values.isEmpty());
 
             // Check getAttribute
@@ -59,6 +63,27 @@ class MavenCentralTest {
                             xpath(dropdownSelection))
                     .orElse(null);
             assertEquals(xpath(dropdownSelection), firstExisting);
+
+            // Check visible
+            browser.alignTop(tagName("body")); // Reset top
+            browser.alignTop(MAVEN_SNIPPET);
+            browser.screenshot("align-top.png");
+            browser.alignTop(tagName("body")); // Reset top
+            browser.alignCenter(MAVEN_SNIPPET);
+            browser.screenshot("align-center.png");
+            browser.alignTop(tagName("body")); // Reset top
+            browser.scrollArea(MAVEN_POM);
+            browser.alignBottom(MAVEN_SNIPPET);
+            browser.screenshot("align-bottom.png");
+            assertTrue(browser.visible(MAVEN_SNIPPET));
+
+            // Check hover
+            WebElement copyButton = browser.getElement(MAVEN_POM_COPY).orElse(null);
+            assertNotNull(copyButton);
+            assertEquals(TRANSPARENT, copyButton.getCssValue(BACKGROUND_COLOR));
+            browser.alignTop(MAVEN_POM_COPY);
+            browser.hover(MAVEN_POM_COPY);
+            assertNotEquals(TRANSPARENT, copyButton.getCssValue(BACKGROUND_COLOR));
         }
 
         File screenshot = new File(SCREENSHOT_PATH);

@@ -13,5 +13,7 @@ public class Constants {
     public static final By MAVEN_SEARCH_RESULTS = xpath("//main//div[@data-test='component-card-item']/a[contains(@class, 'text-link')]");
     public static final By MAVEN_SNIPPET = xpath("//main//pre[@data-test='snippet']");
     public static final By MAVEN_VERSION = xpath("//main//div[@data-test='latest-version-metadata']");
+    public static final By MAVEN_POM = xpath("//main//pre[@data-test='pom-file']");
+    public static final By MAVEN_POM_COPY = xpath("//main//div[contains(@class, 'POMFile')]//button[@data-test='copy-to-clipboard-btn']");
 
 }
