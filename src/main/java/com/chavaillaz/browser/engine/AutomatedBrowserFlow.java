@@ -1,12 +1,12 @@
 package com.chavaillaz.browser.engine;
 
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.WebDriver;
+import static java.util.Optional.ofNullable;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static java.util.Optional.ofNullable;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.WebDriver;
 
 @Slf4j
 public class AutomatedBrowserFlow<B extends AutomatedBrowser, C> {

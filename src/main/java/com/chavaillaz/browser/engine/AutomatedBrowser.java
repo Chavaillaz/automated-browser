@@ -1,16 +1,13 @@
 package com.chavaillaz.browser.engine;
 
-import com.chavaillaz.browser.exception.BrowserException;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.slf4j.Logger;
+import static java.awt.Toolkit.getDefaultToolkit;
+import static java.lang.Thread.currentThread;
+import static java.time.Duration.ofSeconds;
+import static javax.imageio.ImageIO.write;
+import static org.apache.commons.io.FileUtils.copyFile;
+import static org.openqa.selenium.OutputType.FILE;
+import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
 
-import java.awt.Rectangle;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.Closeable;
@@ -21,13 +18,21 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static java.awt.Toolkit.getDefaultToolkit;
-import static java.lang.Thread.currentThread;
-import static java.time.Duration.ofSeconds;
-import static javax.imageio.ImageIO.write;
-import static org.apache.commons.io.FileUtils.copyFile;
-import static org.openqa.selenium.OutputType.FILE;
-import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
+import com.chavaillaz.browser.exception.BrowserException;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
 
 @Slf4j
 @Getter

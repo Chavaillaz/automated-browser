@@ -1,21 +1,18 @@
 package com.chavaillaz.browser.utils;
 
+import static java.util.Collections.singletonList;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import com.chavaillaz.browser.engine.Browser;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static java.util.Collections.singletonList;
 
 @Slf4j
 @UtilityClass
@@ -43,8 +40,11 @@ public class BrowserUtils {
      * @return The chrome driver
      */
     public static WebDriver getChromeDriver() {
-        WebDriverManager.chromedriver().create();
-        return new ChromeDriver(getChromeOptions());
+        return WebDriverManager.chromedriver()
+                .capabilities(getChromeOptions())
+                .clearResolutionCache()
+                .clearDriverCache()
+                .create();
     }
 
     /**
@@ -73,9 +73,13 @@ public class BrowserUtils {
      * @return The firefox driver
      */
     public static WebDriver getFirefoxDriver() {
-        WebDriverManager.firefoxdriver().create();
-        FirefoxOptions options = new FirefoxOptions().merge(getChromeOptions());
-        return new FirefoxDriver(options);
+        FirefoxOptions options = new FirefoxOptions()
+                .merge(getChromeOptions());
+        return WebDriverManager.firefoxdriver()
+                .capabilities(options)
+                .clearResolutionCache()
+                .clearDriverCache()
+                .create();
     }
 
     /**
@@ -85,9 +89,13 @@ public class BrowserUtils {
      * @return The edge driver
      */
     public static WebDriver getEdgeDriver() {
-        WebDriverManager.edgedriver().create();
-        EdgeOptions options = new EdgeOptions().merge(getChromeOptions());
-        return new EdgeDriver(options);
+        EdgeOptions options = new EdgeOptions()
+                .merge(getChromeOptions());
+        return WebDriverManager.edgedriver()
+                .capabilities(options)
+                .clearResolutionCache()
+                .clearDriverCache()
+                .create();
     }
 
 }
